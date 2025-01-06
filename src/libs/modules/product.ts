@@ -12,12 +12,12 @@ const productSchema = new Schema({
   },
   sales: {
     type: Number,
-    required: true,
+    required: false,
     default: 0,
   },
   afterSalesQuantity: {
     type: Number,
-    required: true,
+    required: false,
     default: 0,
   },
 });

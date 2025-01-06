@@ -7,11 +7,10 @@ export async function POST(req: Request) {
   try {
     await connectMongo();
 
-    const body = await req.json(); // Parse the incoming request body
+    const body = await req.json();
     const { name, quantity, sales, afterSalesQuantity } = body;
 
-    // Validate request body
-    if (!name || !quantity || !sales || !afterSalesQuantity) {
+    if (!name || !quantity || !afterSalesQuantity) {
       return NextResponse.json(
         { msg: "All fields are required" },
         { status: 400 }
