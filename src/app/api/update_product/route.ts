@@ -29,6 +29,16 @@ export async function PATCH(
     const payload: ProductUpdatePayload = await req.json();
     const { id, name, quantity, sales, afterSalesQuantity } = payload;
 
+    if (!id) {
+      return NextResponse.json<ErrorResponse>(
+        {
+          error: null,
+          msg: "Product ID is required",
+        },
+        { status: 400 }
+      );
+    }
+
     const product = await Product.findById(id);
 
     if (!product) {
@@ -41,26 +51,12 @@ export async function PATCH(
       );
     }
 
-    if (sales !== undefined) {
-      const updatedAfterSalesQuantity =
-        (parseInt(product.afterSalesQuantity) || 0) + sales;
-
-      product.sales = (product.sales || 0) + sales;
-      product.afterSalesQuantity = updatedAfterSalesQuantity;
-      // product.quantity = updatedQuantity;
-    }
-
-    if (name !== undefined) {
-      product.name = name;
-    }
-
-    if (quantity !== undefined && sales === undefined) {
-      product.quantity = quantity;
-    }
-
-    if (afterSalesQuantity !== undefined && sales === undefined) {
+    // Update only the fields provided in the payload
+    if (name !== undefined) product.name = name;
+    if (quantity !== undefined) product.quantity = quantity;
+    if (sales !== undefined) product.sales = sales;
+    if (afterSalesQuantity !== undefined)
       product.afterSalesQuantity = afterSalesQuantity;
-    }
 
     await product.save();
 
@@ -69,12 +65,13 @@ export async function PATCH(
       product,
     });
   } catch (error) {
+    console.error("Error updating product:", error);
     return NextResponse.json<ErrorResponse>(
       {
         error,
-        msg: "something went wrong",
+        msg: "Something went wrong while updating the product",
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
