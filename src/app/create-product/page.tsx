@@ -1,10 +1,10 @@
 import React from "react";
-import Table from "./components/ProductTable";
+import AddProductForm from "../components/AddProductForm";
 
 const page = () => {
   return (
     <div>
-      <Table />
+      <AddProductForm />
     </div>
   );
 };
