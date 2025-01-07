@@ -51,12 +51,27 @@ export async function PATCH(
       );
     }
 
-    // Update only the fields provided in the payload
+    if (product.afterSalesQuantity <= product.sales) {
+      return NextResponse.json<ErrorResponse>(
+        {
+          error: null,
+          msg: "Your product is stock out!",
+        },
+        { status: 404 }
+      );
+    }
+
+    const updateSales = product.sales + (Number(sales) ?? 0);
+    const updateQuantity = product.afterSalesQuantity - (Number(sales) ?? 0);
+
+    console.log("update sales", updateSales);
+    console.log("update quantity", updateQuantity);
+
     if (name !== undefined) product.name = name;
     if (quantity !== undefined) product.quantity = quantity;
-    if (sales !== undefined) product.sales = sales;
+    if (sales !== undefined) product.sales = updateSales;
     if (afterSalesQuantity !== undefined)
-      product.afterSalesQuantity = afterSalesQuantity;
+      product.afterSalesQuantity = updateQuantity;
 
     await product.save();
 

@@ -200,6 +200,7 @@ export default function Table() {
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
+                  disabled
                 />
               </div>
               <div className="flex justify-end space-x-4">
