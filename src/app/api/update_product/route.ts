@@ -28,6 +28,7 @@ export async function PATCH(
 
     const payload: ProductUpdatePayload = await req.json();
     const { id, name, quantity, sales, afterSalesQuantity } = payload;
+    console.log("payload", Number(sales));
 
     if (!id) {
       return NextResponse.json<ErrorResponse>(
@@ -51,27 +52,36 @@ export async function PATCH(
       );
     }
 
-    if (product.afterSalesQuantity <= product.sales) {
+    if (product.afterSalesQuantity - (Number(sales) ?? 0) < 0) {
       return NextResponse.json<ErrorResponse>(
         {
           error: null,
-          msg: "Your product is stock out!",
+          msg: `Product "${product.name}" is out of stock!`,
         },
-        { status: 404 }
+        { status: 409 }
       );
     }
 
-    const updateSales = product.sales + (Number(sales) ?? 0);
-    const updateQuantity = product.afterSalesQuantity - (Number(sales) ?? 0);
-
-    console.log("update sales", updateSales);
-    console.log("update quantity", updateQuantity);
+    const updatedSales = product.sales + (Number(sales) ?? 0);
+    const updatedAfterSalesQuantity =
+      product.afterSalesQuantity - (Number(sales) ?? 0);
+    const updatedTotalQuantity = product.quantity + (Number(quantity) ?? 0);
+    const updatedAfterSalesQuantity2 =
+      product.afterSalesQuantity + (Number(quantity) ?? 0);
 
     if (name !== undefined) product.name = name;
-    if (quantity !== undefined) product.quantity = quantity;
-    if (sales !== undefined) product.sales = updateSales;
-    if (afterSalesQuantity !== undefined)
-      product.afterSalesQuantity = updateQuantity;
+    if (quantity !== undefined) {
+      product.quantity = updatedTotalQuantity;
+      product.afterSalesQuantity =
+        updatedAfterSalesQuantity2 + updatedAfterSalesQuantity;
+    }
+    if (sales !== undefined) {
+      product.sales = updatedSales;
+      product.afterSalesQuantity =
+        updatedAfterSalesQuantity + updatedAfterSalesQuantity2;
+    }
+    // if (afterSalesQuantity !== undefined)
+    //   product.afterSalesQuantity = updatedAfterSalesQuantity;
 
     await product.save();
 

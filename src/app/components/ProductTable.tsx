@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function Table() {
   const [products, setProducts] = useState<Product[]>([]);
 
-  console.log(products);
+  // console.log(products);
 
   useEffect(() => {
     axios
@@ -49,7 +49,6 @@ export default function Table() {
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Updating product:", selectedProduct);
     if (selectedProduct) {
       try {
         const payload = {
@@ -85,7 +84,7 @@ export default function Table() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    console.log("Updating product:", selectedProduct);
+    // console.log("Updating product:", selectedProduct);
     if (selectedProduct) {
       setSelectedProduct({ ...selectedProduct, [name]: value });
     }
