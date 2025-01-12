@@ -15,6 +15,7 @@ export default function Table() {
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   interface Product {
     _id: string;
@@ -25,7 +26,6 @@ export default function Table() {
   }
 
   const handleOpenModal = (product: Product) => {
-    // Reset quantity and sales to 0 for the modal
     setSelectedProduct({ ...product, quantity: 0, sales: 0 });
     setIsModalOpen(true);
   };
@@ -33,6 +33,16 @@ export default function Table() {
   const handleCloseModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(false);
+  };
+
+  const handleOpenResetModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsResetModalOpen(true);
+  };
+
+  const handleCloseResetModal = () => {
+    setSelectedProduct(null);
+    setIsResetModalOpen(false);
   };
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -68,6 +78,39 @@ export default function Table() {
     }
 
     handleCloseModal();
+  };
+
+  const handleResetProduct = async () => {
+    if (selectedProduct) {
+      try {
+        const payload = {
+          id: selectedProduct._id,
+          name: selectedProduct.name,
+          quantity: 0,
+          sales: 0,
+          afterSalesQuantity: 0,
+        };
+
+        const response = await axios.patch("/api/update_product", payload);
+
+        if (response.status === 200) {
+          const updatedProduct = response.data.product;
+
+          const updatedProducts = products.map((product) =>
+            product._id === updatedProduct._id ? updatedProduct : product
+          );
+          setProducts(updatedProducts);
+
+          toast.success("Product reset successfully");
+        } else {
+          console.error("Failed to reset the product:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error resetting the product:", error);
+      }
+    }
+
+    handleCloseResetModal();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +150,12 @@ export default function Table() {
                     onClick={() => handleOpenModal(product)}
                   >
                     Update Sales
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    onClick={() => handleOpenResetModal(product)}
+                  >
+                    Reset
                   </button>
                 </td>
               </tr>
@@ -206,6 +255,34 @@ export default function Table() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Product Modal */}
+      {isResetModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Reset Product</h2>
+            <p className="mb-4 text-gray-700">
+              Are you sure you want to reset the product data?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={handleCloseResetModal}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={handleResetProduct}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Yes
+              </button>
+            </div>
           </div>
         </div>
       )}
