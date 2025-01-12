@@ -28,9 +28,6 @@ export async function PATCH(
     const payload: ProductUpdatePayload = await req.json();
     const { id, quantity, sales } = payload;
 
-    console.log("Received quantity:", quantity);
-    console.log("Received sales:", sales);
-
     if (!id) {
       return NextResponse.json<ErrorResponse>(
         { error: null, msg: "Product ID is required" },
@@ -98,5 +95,6 @@ export async function PATCH(
   }
   
 }
+
 
 

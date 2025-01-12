@@ -91,7 +91,7 @@ export default function Table() {
           afterSalesQuantity: 0,
         };
 
-        const response = await axios.patch("/api/update_product", payload);
+        const response = await axios.patch("/api/reset_product", payload);
 
         if (response.status === 200) {
           const updatedProduct = response.data.product;
