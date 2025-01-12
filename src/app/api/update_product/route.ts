@@ -2,14 +2,6 @@ import Product from "@/libs/modules/product";
 import connectMongo from "@/libs/MongoConnect";
 import { NextRequest, NextResponse } from "next/server";
 
-interface ProductUpdatePayload {
-  id: string;
-  name?: string;
-  quantity?: number;
-  sales?: number;
-  afterSalesQuantity?: number;
-}
-
 interface ErrorResponse {
   error: unknown;
   msg: string;
@@ -20,6 +12,13 @@ interface SuccessResponse {
   product?: typeof Product;
 }
 
+
+interface ProductUpdatePayload {
+  id: string;
+  quantity?: number;
+  sales?: number;
+}
+
 export async function PATCH(
   req: NextRequest
 ): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
@@ -27,14 +26,14 @@ export async function PATCH(
     await connectMongo();
 
     const payload: ProductUpdatePayload = await req.json();
-    const { id, name, quantity, sales, afterSalesQuantity } = payload;
+    const { id, quantity, sales } = payload;
+
+    console.log("Received quantity:", quantity);
+    console.log("Received sales:", sales);
 
     if (!id) {
       return NextResponse.json<ErrorResponse>(
-        {
-          error: null,
-          msg: "Product ID is required",
-        },
+        { error: null, msg: "Product ID is required" },
         { status: 400 }
       );
     }
@@ -43,35 +42,40 @@ export async function PATCH(
 
     if (!product) {
       return NextResponse.json<ErrorResponse>(
-        {
-          error: null,
-          msg: "Product not found",
-        },
+        { error: null, msg: "Product not found" },
         { status: 404 }
       );
     }
 
-    if (product.afterSalesQuantity <= product.sales) {
+    const salesNumber = Number(sales) || 0;
+    const quantityNumber = Number(quantity) || 0;
+
+    if (salesNumber < 0 || quantityNumber < 0) {
       return NextResponse.json<ErrorResponse>(
-        {
-          error: null,
-          msg: "Your product is stock out!",
-        },
-        { status: 404 }
+        { error: null, msg: "Sales and quantity must be non-negative numbers" },
+        { status: 400 }
       );
     }
 
-    const updateSales = product.sales + (Number(sales) ?? 0);
-    const updateQuantity = product.afterSalesQuantity - (Number(sales) ?? 0);
+    // Check if sales can be subtracted from afterSalesQuantity
+    if (salesNumber > 0 && product.afterSalesQuantity - salesNumber < 0) {
+      return NextResponse.json<ErrorResponse>(
+        { error: null, msg: `Product "${product.name}" is out of stock!` },
+        { status: 409 }
+      );
+    }
 
-    console.log("update sales", updateSales);
-    console.log("update quantity", updateQuantity);
+    // Update sales and afterSalesQuantity
+    if (salesNumber > 0) {
+      product.sales += salesNumber;
+      product.afterSalesQuantity -= salesNumber;
+    }
 
-    if (name !== undefined) product.name = name;
-    if (quantity !== undefined) product.quantity = quantity;
-    if (sales !== undefined) product.sales = updateSales;
-    if (afterSalesQuantity !== undefined)
-      product.afterSalesQuantity = updateQuantity;
+    // Update quantity and afterSalesQuantity
+    if (quantityNumber > 0) {
+      product.quantity += quantityNumber;
+      product.afterSalesQuantity += quantityNumber;
+    }
 
     await product.save();
 
@@ -79,14 +83,20 @@ export async function PATCH(
       msg: "Product updated successfully",
       product,
     });
-  } catch (error) {
+  }catch (error) {
     console.error("Error updating product:", error);
+  
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+  
     return NextResponse.json<ErrorResponse>(
       {
-        error,
+        error: errorMessage,
         msg: "Something went wrong while updating the product",
       },
       { status: 500 }
     );
   }
+  
 }
+
+

@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 export default function Table() {
   const [products, setProducts] = useState<Product[]>([]);
 
-  console.log(products);
-
   useEffect(() => {
     axios
       .get("/api/get_product")
@@ -26,7 +24,8 @@ export default function Table() {
   }
 
   const handleOpenModal = (product: Product) => {
-    setSelectedProduct(product);
+    // Reset quantity and sales to 0 for the modal
+    setSelectedProduct({ ...product, quantity: 0, sales: 0 });
     setIsModalOpen(true);
   };
 
@@ -35,21 +34,9 @@ export default function Table() {
     setIsModalOpen(false);
   };
 
-  // const handleUpdateProduct = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   if (selectedProduct) {
-  //     const updatedProducts: Product[] = products.map((product: Product) =>
-  //       product._id === selectedProduct._id ? selectedProduct : product
-  //     );
-  //     setProducts(updatedProducts);
-  //   }
-  //   handleCloseModal();
-  // };
-
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Updating product:", selectedProduct);
     if (selectedProduct) {
       try {
         const payload = {
@@ -85,7 +72,6 @@ export default function Table() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    console.log("Updating product:", selectedProduct);
     if (selectedProduct) {
       setSelectedProduct({ ...selectedProduct, [name]: value });
     }
