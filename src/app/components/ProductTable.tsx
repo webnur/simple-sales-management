@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Table() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -52,12 +53,12 @@ export default function Table() {
         if (response.status === 200) {
           const updatedProduct = response.data.product;
 
-          // Update the products list in the frontend
           const updatedProducts = products.map((product) =>
             product._id === updatedProduct._id ? updatedProduct : product
           );
           setProducts(updatedProducts);
-          console.log("Product updated successfully:", updatedProduct);
+
+          toast.success("Product updated successfully");
         } else {
           console.error("Failed to update the product:", response.statusText);
         }
