@@ -18,7 +18,7 @@ function RegisterPage() {
       setLoading(true);
       await axios.post('/api/users/signup',user);
       toast.success('Registration successful, please signin');
-      router.push('/signin');
+      router.push('/sign-in');
       setLoading(false);
     }catch(error){
       setLoading(false);
