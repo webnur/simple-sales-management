@@ -26,9 +26,9 @@ export default function Header() {
               Create Product
             </span>
           </Link>
-          <Link href="/login">
+          <Link href="/signin">
             <span className="hover:text-gray-400 transition-colors duration-200">
-              Login
+              SignIn
             </span>
           </Link>
           <Link href="/signup">

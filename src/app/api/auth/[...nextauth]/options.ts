@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
@@ -34,9 +35,7 @@ export const authOptions: NextAuthOptions = {
           if (!user) {
             throw new Error("Invalid Username Or Email");
           }
-          if (!user.isVerified) {
-            throw new Error("Please Verify Your Account Before Login");
-          }
+         
 
           const isMatchedPass = await bcryptjs.compare(password, user.password);
 
@@ -59,8 +58,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token._id = user._id?.toString();
-        token.isVerified = user.isVerified;
-        token.username = user.username;
+        token.email = user.email;
       }
       return token;
     },
