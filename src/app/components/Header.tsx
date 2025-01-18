@@ -1,9 +1,18 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import AddProductForm from "./AddProductForm";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isModalOpen,setIsModalOpen]=useState<boolean>(false);
+
+
+  const handleOpenModal = () => {
+   
+    setIsModalOpen(true);
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -21,21 +30,19 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6">
-          <Link href="/create-product">
-            <span className="hover:text-gray-400 transition-colors duration-200">
-              Create Product
-            </span>
-          </Link>
-          <Link href="/sign-in">
-            <span className="hover:text-gray-400 transition-colors duration-200">
-              SignIn
-            </span>
-          </Link>
-          <Link href="/signup">
-            <span className="hover:text-gray-400 transition-colors duration-200">
-              Sign Up
-            </span>
-          </Link>
+        
+          <button
+                    className="hover:text-gray-400 transition-colors duration-200"
+                    onClick={() => handleOpenModal()}
+                  >
+                  Create Product
+                  </button>
+          <button
+          className="hover:text-gray-400 transition-colors duration-200"
+          onClick={() => signOut()}
+        >
+          Sign out
+        </button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -91,6 +98,18 @@ export default function Header() {
               </span>
             </Link>
           </nav>
+        </div>
+      )}
+
+       {/* Update Product Modal */}
+       {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 relative rounded-lg shadow-lg w-full max-w-md">
+            <span className="text-xl absolute right-2 top-2 text-bold text-black">
+              <button onClick={()=>setIsModalOpen(false)}>Close</button>
+              </span>
+            <AddProductForm/>
+          </div>
         </div>
       )}
     </header>

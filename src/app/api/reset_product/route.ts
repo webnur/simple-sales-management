@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import Product from "@/libs/modules/product";
 import connectMongo from "@/libs/MongoConnect";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,6 +28,7 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
     const product = await Product.findById(id);
     product.quantity=0,
     product.sales=0,
@@ -51,6 +53,7 @@ export async function PATCH(
     // }
 
    
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error:any) {
     console.error("Error updating product:", error);
 

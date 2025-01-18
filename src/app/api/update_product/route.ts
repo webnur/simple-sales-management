@@ -55,7 +55,10 @@ export async function PATCH(
     }
 
     // Check if sales can be subtracted from afterSalesQuantity
-    if (salesNumber > 0 && product.afterSalesQuantity - salesNumber < 0) {
+    if ( product.sales + salesNumber > product.quantity) {
+      console.log(" Sales",product.sales);
+      console.log("sale num",salesNumber);
+      console.log("q",product.quantity);
       return NextResponse.json<ErrorResponse>(
         { error: null, msg: `Product "${product.name}" is out of stock!` },
         { status: 409 }
@@ -81,8 +84,6 @@ export async function PATCH(
       product,
     });
   }catch (error) {
-    console.error("Error updating product:", error);
-  
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
   
     return NextResponse.json<ErrorResponse>(

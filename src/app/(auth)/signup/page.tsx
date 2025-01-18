@@ -31,7 +31,7 @@ function RegisterPage() {
         <input type="email" placeholder="email" className="border disabled:border-red-500 rounded-md border-gray-300 p-2 m-2" value={user.email} onChange={(e)=>setUser({...user,email:e.target.value})} />
         <input type="password" disabled={user.email === ''} placeholder="password" className="border disabled:border-red-500 rounded-md border-gray-300 p-2 m-2" value={user.password} onChange={(e)=>setUser({...user,password:e.target.value})} />
         <button onClick={registerButton} disabled={user.password === ''} className="bg-green-500 text-white disabled:bg-red-500 p-2 m-2 rounded-md">{loading?'Processing':'Register'}</button>
-        <Link href="/signin">Visit Login Page</Link>
+        <Link href="/sign-in">Visit Login Page</Link>
     </div>
   )
 }

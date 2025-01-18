@@ -70,10 +70,11 @@ export default function Table() {
 
           toast.success("Product updated successfully");
         } else {
-          console.error("Failed to update the product:", response.statusText);
+          toast.error(response.statusText);
         }
-      } catch (error) {
-        console.error("Error updating the product:", error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error:any) {
+        toast.error(error.msg);
       }
     }
 
@@ -103,10 +104,11 @@ export default function Table() {
 
           toast.success("Product reset successfully");
         } else {
-          console.error("Failed to reset the product:", response.statusText);
+          toast.error(response.statusText);
         }
-      } catch (error) {
-        console.error("Error resetting the product:", error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error:any) {
+        toast.error(error);
       }
     }
 

@@ -1,8 +1,12 @@
 import React from 'react'
+import Header from '../components/Header';
+import Table from '../components/ProductTable';
 
 function DashboardPage() {
   return (
-    <div>DashboardPage</div>
+    <><Header />
+    <Table/>
+    </>
   )
 }
 

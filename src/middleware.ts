@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     const path=request.nextUrl.pathname;
-    const isPublicUrl=path==='/login' || path==='/register'||path==='/signin'||path==='/sign-in';
+    const isPublicUrl=path==='/sign-in'||path==='/signup';
     // const token= request.cookies.get('token')?.value||"";
     const token= await getToken({req:request})
     if(!token && path==="/dashboard"){
@@ -24,11 +24,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/signin",
-    "/login",
-    "/register",
-    "/verifyemail",
-    "/profile",
+    "/sign-in",
+    "/signup",
     "/dashboard"
   ],
 }
