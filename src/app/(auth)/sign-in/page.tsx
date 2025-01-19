@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { signIn} from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -31,7 +31,6 @@ export default function Component() {
       toast.error("Something went wrong. Please try again!");
     }
   };
-
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -81,9 +80,7 @@ export default function Component() {
                   : "border-gray-300 focus:ring-2 focus:ring-blue-500"
               }`}
               value={user.password}
-              onChange={(e) =>
-                setUser({ ...user, password: e.target.value })
-              }
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
           </div>
           <button
@@ -103,11 +100,6 @@ export default function Component() {
             Home
           </h1>
         </Link>
-        <Link href="/signup">
-            <span className="text-center text-gray-800 mt-6">
-              Sign Up
-            </span>
-          </Link>
       </div>
     </div>
   );
