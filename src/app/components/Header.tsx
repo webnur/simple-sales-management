@@ -73,30 +73,18 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="bg-gray-800 md:hidden">
           <nav className="flex flex-col space-y-4 p-4">
-            <Link href="/create-product">
-              <span
-                onClick={toggleMobileMenu}
-                className="hover:text-gray-400 transition-colors duration-200 cursor-pointer"
-              >
-                Create Product
-              </span>
-            </Link>
-            <Link href="/login">
-              <span
-                onClick={toggleMobileMenu}
-                className="hover:text-gray-400 transition-colors duration-200 cursor-pointer"
-              >
-                Login
-              </span>
-            </Link>
-            <Link href="/signup">
-              <span
-                onClick={toggleMobileMenu}
-                className="hover:text-gray-400 transition-colors duration-200 cursor-pointer"
-              >
-                Sign Up
-              </span>
-            </Link>
+            <button
+              className="hover:text-gray-400 transition-colors duration-200"
+              onClick={() => handleOpenModal()}
+            >
+              Create Product
+            </button>
+            <button
+              className="hover:text-gray-400 transition-colors duration-200"
+              onClick={() => signOut()}
+            >
+              Sign out
+            </button>
           </nav>
         </div>
       )}
