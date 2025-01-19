@@ -15,6 +15,7 @@ interface SuccessResponse {
 
 interface ProductUpdatePayload {
   id: string;
+  name?:string;
   quantity?: number;
   sales?: number;
 }
@@ -26,7 +27,7 @@ export async function PATCH(
     await connectMongo();
 
     const payload: ProductUpdatePayload = await req.json();
-    const { id, quantity, sales } = payload;
+    const { id,name, quantity, sales } = payload;
 
     if (!id) {
       return NextResponse.json<ErrorResponse>(
@@ -46,6 +47,11 @@ export async function PATCH(
 
     const salesNumber = Number(sales) || 0;
     const quantityNumber = Number(quantity) || 0;
+
+
+    if(name){
+      product.name=name;
+    }
 
     if (salesNumber < 0 || quantityNumber < 0) {
       return NextResponse.json<ErrorResponse>(

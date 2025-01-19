@@ -29,6 +29,7 @@ export default function Table() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   interface Product {
     _id: string;
@@ -53,9 +54,20 @@ export default function Table() {
     setIsResetModalOpen(true);
   };
 
+  const handleOpenDeleteModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDeleteModalOpen(true);
+  };
+
   const handleCloseResetModal = () => {
     setSelectedProduct(null);
     setIsResetModalOpen(false);
+  };
+
+
+  const handleCloseDeleteModal = () => {
+    setSelectedProduct(null);
+    setIsDeleteModalOpen(false);
   };
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,6 +140,33 @@ export default function Table() {
     handleCloseResetModal();
   };
 
+  const handleDeleteProduct = async () => {
+    if (selectedProduct) {
+      try {
+
+        const response = await axios.delete(`/api/delete_product?id=${selectedProduct._id}`);
+
+        if (response.status === 200) {
+          const updatedProduct = response.data.product;
+
+          const updatedProducts = products.map((product) =>
+            product._id === updatedProduct._id ? updatedProduct : product
+          );
+          setProducts(updatedProducts);
+
+          toast.success("Product reset successfully");
+        } else {
+          toast.error(response.statusText);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        toast.error(error);
+      }
+    }
+
+    handleCloseResetModal();
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -177,6 +216,12 @@ export default function Table() {
                     onClick={() => handleOpenResetModal(product)}
                   >
                     Reset
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 mx-4"
+                    onClick={() => handleOpenDeleteModal(product)}
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -299,6 +344,32 @@ export default function Table() {
               <button
                 type="button"
                 onClick={handleResetProduct}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+       {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Delete Product</h2>
+            <p className="mb-4 text-gray-700">
+              Are you sure you want to delete the product data?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={handleCloseDeleteModal}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteProduct}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 Yes
