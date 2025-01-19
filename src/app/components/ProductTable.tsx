@@ -1,17 +1,30 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { MyContext } from "../provider/ContextProvider";
+import Loading from "./Loader";
 
 export default function Table() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const context = useContext(MyContext);
+  const globalLoading = context?.globalLoading;
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get("/api/get_product")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
-  }, []);
+      .then((res) => {
+        setProducts(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error(err);
+        setLoading(false);
+      });
+  }, [globalLoading]);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,8 +85,8 @@ export default function Table() {
         } else {
           toast.error(response.statusText);
         }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error:any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
         toast.error(error.msg);
       }
     }
@@ -106,8 +119,8 @@ export default function Table() {
         } else {
           toast.error(response.statusText);
         }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error:any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
         toast.error(error);
       }
     }
@@ -123,6 +136,10 @@ export default function Table() {
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="p-6">
       {/* Product Table */}
@@ -131,22 +148,24 @@ export default function Table() {
           <thead className="bg-gray-800 text-gray-200">
             <tr>
               <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">Product Name</th>
-              <th className="px-4 py-3 text-left">Stock Quantity</th>
-              <th className="px-4 py-3 text-left">Total Sales</th>
-              <th className="px-4 py-3 text-left">After Sales Quantity</th>
-              <th className="px-4 py-3 text-left">Action</th>
+              <th className="px-4 py-3 ">Product Name</th>
+              <th className="px-4 py-3 ">Stock Quantity</th>
+              <th className="px-4 py-3 ">Total Sales</th>
+              <th className="px-4 py-3 ">After Sales Quantity</th>
+              <th className="px-4 py-3 ">Action</th>
             </tr>
           </thead>
           <tbody className="bg-gray-900 text-gray-300 divide-y divide-gray-700">
             {products.map((product, index) => (
               <tr key={product._id}>
-                <td className="px-4 py-3">{index + 1}</td>
-                <td className="px-4 py-3">{product.name}</td>
-                <td className="px-4 py-3">{product.quantity}</td>
-                <td className="px-4 py-3">{product.sales}</td>
-                <td className="px-4 py-3">{product.afterSalesQuantity}</td>
-                <td className="px-4 py-3">
+                <td className="px-4  py-3">{index + 1}</td>
+                <td className="px-4 text-center py-3">{product.name}</td>
+                <td className="px-4 text-center py-3">{product.quantity}</td>
+                <td className="px-4 text-center py-3">{product.sales}</td>
+                <td className="px-4 text-center py-3">
+                  {product.afterSalesQuantity}
+                </td>
+                <td className="px-4 text-center py-3">
                   <button
                     className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                     onClick={() => handleOpenModal(product)}
@@ -154,7 +173,7 @@ export default function Table() {
                     Update Sales
                   </button>
                   <button
-                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 ml-4"
                     onClick={() => handleOpenResetModal(product)}
                   >
                     Reset

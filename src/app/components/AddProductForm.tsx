@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import toast from "react-hot-toast";
+import { MyContext } from "../provider/ContextProvider";
 
 export default function AddProductForm() {
+  const context = useContext(MyContext);
+  if (!context) {
+    throw new Error("MyContext must be used within a ContextProvider");
+  }
+  const { globalLoading, setGlobalLoading } = context;
   interface FormData {
     productName: string;
     stockQuantity: number;
@@ -47,12 +53,14 @@ export default function AddProductForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
-        }).then(() => {
-          toast.success("Product added successfully!");
-         
-        }).catch(err=>{
-          toast.error(err);
-        });
+        })
+          .then(() => {
+            toast.success("Product added successfully!");
+            setGlobalLoading(!globalLoading);
+          })
+          .catch((err) => {
+            toast.error(err);
+          });
 
         // Reset form
         setFormData({
@@ -69,61 +77,58 @@ export default function AddProductForm() {
     if (isSubmitting) {
       addProduct();
     }
-  }, [isSubmitting, formData]);
+  }, [isSubmitting, formData, globalLoading, setGlobalLoading]);
 
   return (
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
-      >
-
-        {/* Product Name */}
-        <div className="mb-4">
-          <label
-            htmlFor="productName"
-            className="block text-gray-700 font-medium mb-2"
-          >
-            Product Name
-          </label>
-          <input
-            type="text"
-            id="productName"
-            name="productName"
-            value={formData.productName}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter product name"
-          />
-        </div>
-
-        {/* Stock Quantity */}
-        <div className="mb-4">
-          <label
-            htmlFor="stockQuantity"
-            className="block text-gray-700 font-medium mb-2"
-          >
-            Stock Quantity
-          </label>
-          <input
-            type="number"
-            id="stockQuantity"
-            name="stockQuantity"
-            value={formData.stockQuantity}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter stock quantity"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+    >
+      {/* Product Name */}
+      <div className="mb-4">
+        <label
+          htmlFor="productName"
+          className="block text-gray-700 font-medium mb-2"
         >
-          Add Product
-        </button>
-      </form>
-  
+          Product Name
+        </label>
+        <input
+          type="text"
+          id="productName"
+          name="productName"
+          value={formData.productName}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter product name"
+        />
+      </div>
+
+      {/* Stock Quantity */}
+      <div className="mb-4">
+        <label
+          htmlFor="stockQuantity"
+          className="block text-gray-700 font-medium mb-2"
+        >
+          Stock Quantity
+        </label>
+        <input
+          type="number"
+          id="stockQuantity"
+          name="stockQuantity"
+          value={formData.stockQuantity}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter stock quantity"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+      >
+        Add Product
+      </button>
+    </form>
   );
 }
